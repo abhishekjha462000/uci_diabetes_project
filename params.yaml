@@ -1,0 +1,36 @@
+data:
+  raw_path: "data/raw/diabetic_data.csv"
+  processed_dir: "data/processed"
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
+
+preprocessing:
+  target_col: "readmitted"
+  positive_class: "<30"
+  dead_hospice_ids: [11, 13, 14, 19, 20, 21]
+  drop_cols:
+    - "encounter_id"
+    - "weight"
+    - "payer_code"
+    - "examide"
+    - "citoglipton"
+  not_measured_cols:
+    - "max_glu_serum"
+    - "A1Cresult"
+  test_size: 0.2
+  random_state: 42
+
+model:
+  model_dir: "models"
+  model_path: "models/model.joblib"
+  scores_path: "scores.json"
+  xgboost:
+    n_estimators: 200
+    max_depth: 5
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+
+mlflow:
+  experiment_name: "UCI_Diabetes_Readmission"
