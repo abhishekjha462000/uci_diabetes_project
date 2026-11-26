@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from fastapi.responses import FileResponse
 
 # 1. Initialize FastAPI app
 app = FastAPI(
@@ -33,6 +34,11 @@ class PatientData(BaseModel):
     insulin: str = Field(default="Up", examples=["Up"])
     change: str = Field(default="Ch", examples=["Ch"])
     diabetesMed: str = Field(default="Yes", examples=["Yes"])
+
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse("app/static/index.html")
 
 # 4. Health check endpoint (used by Docker / cloud platforms to verify the API is alive)
 @app.get("/health")

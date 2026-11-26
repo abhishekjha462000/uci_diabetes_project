@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diabetes Readmission Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-6">
+
+  <div class="max-w-4xl w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-indigo-600 to-cyan-600 p-6">
+      <h1 class="text-2xl font-bold tracking-tight text-white">30-Day Diabetes Readmission Predictor</h1>
+      <p class="text-indigo-100 text-sm mt-1">Clinical risk assessment powered by XGBoost & FastAPI</p>
+    </div>
+
+    <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Form Section -->
+      <form id="predictForm" class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Race</label>
+          <select name="race" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>Caucasian</option><option>AfricanAmerican</option><option>Hispanic</option><option>Asian</option><option>Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Gender</label>
+          <select name="gender" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>Female</option><option>Male</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Age Group</label>
+          <select name="age" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>[0-10)</option><option>[10-20)</option><option>[20-30)</option><option>[30-40)</option>
+            <option>[40-50)</option><option>[50-60)</option><option>[60-70)</option><option selected>[70-80)</option>
+            <option>[80-90)</option><option>[90-100)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Time in Hospital (1-14 days)</label>
+          <input type="number" name="time_in_hospital" value="4" min="1" max="14" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Lab Procedures</label>
+          <input type="number" name="num_lab_procedures" value="45" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Non-Lab Procedures</label>
+          <input type="number" name="num_procedures" value="1" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Medications</label>
+          <input type="number" name="num_medications" value="15" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Diagnoses Count</label>
+          <input type="number" name="number_diagnoses" value="7" min="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Prior Outpatient Visits</label>
+          <input type="number" name="number_outpatient" value="0" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Prior Emergency Visits</label>
+          <input type="number" name="number_emergency" value="0" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Prior Inpatient Visits</label>
+          <input type="number" name="number_inpatient" value="1" min="0" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Max Glucose Serum</label>
+          <select name="max_glu_serum" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>Not_Measured</option><option>Norm</option><option>&gt;200</option><option>&gt;300</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">A1C Result</label>
+          <select name="A1Cresult" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>Not_Measured</option><option>Norm</option><option>&gt;7</option><option selected>&gt;8</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Insulin</label>
+          <select name="insulin" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>No</option><option>Steady</option><option selected>Up</option><option>Down</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Medication Changed?</label>
+          <select name="change" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option>No</option><option selected>Ch</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Diabetes Med Prescribed?</label>
+          <select name="diabetesMed" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <option selected>Yes</option><option>No</option>
+          </select>
+        </div>
+
+        <div class="sm:col-span-2 pt-2">
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 transition font-semibold py-3 rounded-xl text-white shadow-lg">
+            Predict Readmission Risk
+          </button>
+        </div>
+      </form>
+
+      <!-- Result Card -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-6 flex flex-col justify-center items-center text-center">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Prediction Output</p>
+        <div id="probDisplay" class="text-5xl font-extrabold my-4 text-slate-600">--%</div>
+        <div id="tierBadge" class="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 text-slate-400">
+          Awaiting Input
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-800 h-2.5 rounded-full mt-6 overflow-hidden">
+          <div id="riskBar" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <p id="statusMsg" class="text-xs text-slate-500 mt-4">
+          Submit patient parameters to calculate 30-day readmission probability.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const intFields = [
+      "time_in_hospital", "num_lab_procedures", "num_procedures",
+      "num_medications", "number_outpatient", "number_emergency",
+      "number_inpatient", "number_diagnoses"
+    ];
+
+    document.getElementById("predictForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = {};
+
+      for (const [key, value] of formData.entries()) {
+        payload[key] = intFields.includes(key) ? parseInt(value, 10) : value;
+      }
+
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const pct = (data.readmission_probability * 100).toFixed(1);
+
+      const probEl = document.getElementById("probDisplay");
+      const badgeEl = document.getElementById("tierBadge");
+      const barEl = document.getElementById("riskBar");
+      const msgEl = document.getElementById("statusMsg");
+
+      probEl.textContent = `${pct}%`;
+      barEl.style.width = `${pct}%`;
+
+      if (data.risk_tier === "High") {
+        probEl.className = "text-5xl font-extrabold my-4 text-rose-400";
+        badgeEl.className = "px-4 py-1.5 rounded-full text-sm font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        barEl.className = "h-full bg-rose-500 transition-all duration-500";
+        badgeEl.textContent = "High Risk";
+        msgEl.textContent = "High likelihood of readmission within 30 days. Recommend follow-up.";
+      } else if (data.risk_tier === "Medium") {
+        probEl.className = "text-5xl font-extrabold my-4 text-amber-400";
+        badgeEl.className = "px-4 py-1.5 rounded-full text-sm font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        barEl.className = "h-full bg-amber-500 transition-all duration-500";
+        badgeEl.textContent = "Medium Risk";
+        msgEl.textContent = "Moderate readmission risk. Consider discharge monitoring.";
+      } else {
+        probEl.className = "text-5xl font-extrabold my-4 text-emerald-400";
+        badgeEl.className = "px-4 py-1.5 rounded-full text-sm font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        barEl.className = "h-full bg-emerald-500 transition-all duration-500";
+        badgeEl.textContent = "Low Risk";
+        msgEl.textContent = "Low likelihood of 30-day hospital readmission.";
+      }
+    });
+  </script>
+</body>
+</html>
