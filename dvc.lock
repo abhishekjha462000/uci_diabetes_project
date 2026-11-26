@@ -1,0 +1,89 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw/diabetic_data.csv
+      hash: md5
+      md5: 8a01d91d7d156423e7c84a8022e980af
+      size: 18241862
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: 1ed8bda10ea7e4cbc1a2e4f1036046c8
+      size: 2044
+    params:
+      params.yaml:
+        data:
+          raw_path: data/raw/diabetic_data.csv
+          processed_dir: data/processed
+          train_path: data/processed/train.csv
+          test_path: data/processed/test.csv
+        preprocessing:
+          target_col: readmitted
+          positive_class: <30
+          dead_hospice_ids:
+          - 11
+          - 13
+          - 14
+          - 19
+          - 20
+          - 21
+          drop_cols:
+          - encounter_id
+          - weight
+          - payer_code
+          - examide
+          - citoglipton
+          not_measured_cols:
+          - max_glu_serum
+          - A1Cresult
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 0a88e963a8e9d518b544e7c87dce572b
+      size: 2395375
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 692e4273568320e96b20b63fa884db0a
+      size: 9575222
+  train:
+    cmd: python src/model_trainer.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 0a88e963a8e9d518b544e7c87dce572b
+      size: 2395375
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 692e4273568320e96b20b63fa884db0a
+      size: 9575222
+    - path: src/model_trainer.py
+      hash: md5
+      md5: 6be853955005f8edb66d22d6324e62ce
+      size: 3839
+    params:
+      params.yaml:
+        mlflow:
+          experiment_name: UCI_Diabetes_Readmission
+        model:
+          model_dir: models
+          model_path: models/model.joblib
+          scores_path: scores.json
+          xgboost:
+            n_estimators: 200
+            max_depth: 5
+            learning_rate: 0.05
+            subsample: 0.8
+            colsample_bytree: 0.8
+            random_state: 42
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 9811e761ba3173051a18cbf29a2c7d24
+      size: 439466
+    - path: scores.json
+      hash: md5
+      md5: 03ffd90e5c863e325ef08075cade0337
+      size: 75
