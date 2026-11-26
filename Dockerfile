@@ -8,11 +8,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. Copy your project code, frontend, and saved model into the container
+# 4. Copy project code, frontend, and saved model into the container
 COPY . .
 
 # 5. Expose port 8000 for FastAPI
 EXPOSE 8000
 
 # 6. Start the FastAPI server when the container launches
-CMD ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.api:app --host 0.0.0.0 --port ${PORT:-8000}"]
